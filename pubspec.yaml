@@ -31,6 +31,9 @@ dependencies:
   flutter_svg: ^2.0.9
   video_player: ^2.2.18
   select_dialog: ^2.0.1
+  auto_size_text: ^3.0.0
+  google_fonts: ^6.1.0
+  flutter_colorpicker: ^1.0.3
   flutter:
     sdk: flutter
 

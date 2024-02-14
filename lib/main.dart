@@ -1,6 +1,9 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 
 /* ****************************************************************************
@@ -43,21 +46,47 @@ Map<PresentationType, String> presentationTypeNames = {
   PresentationType.type3: 'Typ 3',
 };
 
+enum ProductType {
+  product1,
+  product2,
+  product3,
+  product4,
+  product5,
+}
+
+Map<ProductType, String> productTypeNames = {
+  ProductType.product1: 'Lemoniada \ncytryna - pomarańcza',
+  ProductType.product2: 'Lemoniada \ncytryna – limetka',
+  ProductType.product3: 'Lemoniada \ncytryna – rabarbar',
+  ProductType.product4: 'Lemoniada \ncytryna – mango',
+  ProductType.product5: 'Lemoniada \ncytryna – malina',
+};
+
+Map<ProductType, String> productTypeMovies = {
+  ProductType.product1: 'assets/videos/pomarancza.mp4',
+  ProductType.product2: 'assets/videos/limonka.mp4',
+  ProductType.product3: 'assets/videos/rabarbar.mp4',
+  ProductType.product4: 'assets/videos/mango.mp4',
+  ProductType.product5: 'assets/videos/malina.mp4',
+};
+
 class MyButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
+  final Color buttonColor;
 
   const MyButton({
     super.key,
     required this.onPressed,
     required this.text,
+    this.buttonColor = Colors.white,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
+        backgroundColor: buttonColor,
       ),
       onPressed: onPressed,
       child: Text(text),
@@ -73,23 +102,66 @@ class MyHomeScreen extends StatefulWidget {
 }
 
 class _MyHomeScreenState extends State<MyHomeScreen> {
+  Color pickerColor = Colors.green;
+  Color currentColor = Colors.green;
+  List<Map<String, dynamic>> portionStates = [
+    {
+      'isChecked': true,
+      'quantity': '200 ml',
+      'price': '7 PLN',
+      'assetPath': 'assets/images/size_s.svg',
+    },
+    {
+      'isChecked': true,
+      'quantity': '300 ml',
+      'price': '9 PLN',
+      'assetPath': 'assets/images/size_m.svg',
+    },
+    {
+      'isChecked': true,
+      'quantity': '500 ml',
+      'price': '13 PLN',
+      'assetPath': 'assets/images/size_l.svg',
+    },
+  ];
+
+  bool isChecked1 = true;
+  bool isChecked2 = true;
+  bool isChecked3 = true;
+
+  final TextEditingController _quantityController1 =
+      TextEditingController(text: "200 ml");
+  final TextEditingController _priceController1 =
+      TextEditingController(text: "10 PLN");
+  final TextEditingController _quantityController2 =
+      TextEditingController(text: "300 ml");
+  final TextEditingController _priceController2 =
+      TextEditingController(text: "15 PLN");
+  final TextEditingController _quantityController3 =
+      TextEditingController(text: "450 ml");
+  final TextEditingController _priceController3 =
+      TextEditingController(text: "20 PLN");
+
   late VideoPlayerController _controller;
   late PresentationType _presentationType;
-  late double space;
+  late ProductType _productType;
+  late double _space;
 
   @override
   void initState() {
     super.initState();
     _presentationType = PresentationType.type1;
-    space = 10;
+    _productType = ProductType.product1;
+    _space = 14;
 
-    _controller = VideoPlayerController.asset('assets/videos/IMBIR.mp4')
-      ..initialize().then((_) {
-        setState(() {
-          _controller.setLooping(true);
-          _controller.play();
-        });
-      });
+    _controller =
+        VideoPlayerController.asset(productTypeMovies[ProductType.product1]!)
+          ..initialize().then((_) {
+            setState(() {
+              _controller.setLooping(true);
+              _controller.play();
+            });
+          });
   }
 
   @override
@@ -98,12 +170,201 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     super.dispose();
   }
 
-  void _goToVideoScreen() {
+  void _goToVideoScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-          builder: (context) => FullScreenVideoScreen(controller: _controller)),
+        builder: (context) => FullScreenVideoScreen(
+          controller: _controller,
+          textColor: currentColor,
+          productTitleText: productTypeNames[_productType]!,
+          selectedPortions:
+              portionStates.where((portion) => portion['isChecked']).toList(),
+        ),
+      ),
     );
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  }
+
+  String colorToRgbString(Color color) {
+    return 'RGB(${color.red}, ${color.green}, ${color.blue})';
+  }
+
+  void _showColorPickerDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Wybierz kolor'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: pickerColor,
+              onColorChanged: (Color color) {
+                setState(() {
+                  pickerColor = color;
+                });
+              },
+              pickerAreaHeightPercent: 0.8,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                setState(() {
+                  currentColor = pickerColor;
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showSettingsDialog(BuildContext context) async {
+    bool localIsChecked1 = isChecked1;
+    bool localIsChecked2 = isChecked2;
+    bool localIsChecked3 = isChecked3;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setDialogState) {
+            return AlertDialog(
+              title: const Text('Ustaw parametry'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    _settingsRow(context, 0, localIsChecked1, setDialogState,
+                        (bool? value) {
+                      localIsChecked1 = value ?? localIsChecked1;
+                    }),
+                    _settingsRow(context, 1, localIsChecked2, setDialogState,
+                        (bool? value) {
+                      localIsChecked2 = value ?? localIsChecked2;
+                    }),
+                    _settingsRow(context, 2, localIsChecked3, setDialogState,
+                        (bool? value) {
+                      localIsChecked3 = value ?? localIsChecked3;
+                    }),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Anuluj'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Zapisz'),
+                  onPressed: () {
+                    setState(() {
+                      portionStates[0]['quantity'] =
+                          _quantityController1.text.isNotEmpty
+                              ? _quantityController1.text
+                              : portionStates[0]['quantity'];
+                      portionStates[0]['price'] =
+                          _priceController1.text.isNotEmpty
+                              ? _priceController1.text
+                              : portionStates[0]['price'];
+                      portionStates[1]['quantity'] =
+                          _quantityController2.text.isNotEmpty
+                              ? _quantityController2.text
+                              : portionStates[1]['quantity'];
+                      portionStates[1]['price'] =
+                          _priceController2.text.isNotEmpty
+                              ? _priceController2.text
+                              : portionStates[1]['price'];
+                      portionStates[2]['quantity'] =
+                          _quantityController3.text.isNotEmpty
+                              ? _quantityController3.text
+                              : portionStates[2]['quantity'];
+                      portionStates[2]['price'] =
+                          _priceController3.text.isNotEmpty
+                              ? _priceController3.text
+                              : portionStates[2]['price'];
+
+                      isChecked1 = localIsChecked1;
+                      isChecked2 = localIsChecked2;
+                      isChecked3 = localIsChecked3;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _settingsRow(BuildContext context, int rowNumber, bool isChecked,
+      StateSetter setDialogState, Function(bool?) onCheckedChanged) {
+    TextEditingController quantityController = rowNumber == 0
+        ? _quantityController1
+        : rowNumber == 1
+            ? _quantityController2
+            : _quantityController3;
+    TextEditingController priceController = rowNumber == 0
+        ? _priceController1
+        : rowNumber == 1
+            ? _priceController2
+            : _priceController3;
+    String portionTitle = "${rowNumber + 1}.";
+
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: Text(portionTitle, textAlign: TextAlign.right),
+        ),
+        Checkbox(
+          value: portionStates[rowNumber]['isChecked'],
+          onChanged: (bool? value) {
+            setDialogState(() {
+              portionStates[rowNumber]['isChecked'] = value!;
+            });
+          },
+        ),
+        Expanded(
+          flex: 3,
+          child: TextField(
+            style: const TextStyle(
+              fontFamily: 'Regular',
+            ),
+            controller: quantityController,
+            decoration: const InputDecoration(
+              helperText: "200 ml",
+              hintText: 'Ilość',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 3,
+          child: TextField(
+            style: const TextStyle(
+              fontFamily: 'Regular',
+            ),
+            controller: priceController,
+            decoration: const InputDecoration(
+              helperText: "10 PLN",
+              hintText: 'Cena',
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   void _showPresentationTypeDialog() async {
@@ -117,7 +378,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           children: PresentationType.values.map((type) {
             return SimpleDialogOption(
               onPressed: () {
-                // Update the temporary selected value and pop the dialog.
                 selectedType = type;
                 Navigator.pop(context);
               },
@@ -128,10 +388,46 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       },
     );
 
-    // If a selection was made, update the state.
     if (selectedType != null) {
       setState(() {
         _presentationType = selectedType!;
+      });
+    }
+  }
+
+  void _showProductTypeDialog() async {
+    ProductType? selectedProduct = _productType;
+
+    await showDialog<ProductType>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Wybierz produkt'),
+          children: ProductType.values.map((product) {
+            return SimpleDialogOption(
+              onPressed: () {
+                selectedProduct = product;
+                Navigator.pop(context);
+              },
+              child: Text(productTypeNames[product] ?? 'Undefined'),
+            );
+          }).toList(),
+        );
+      },
+    );
+
+    if (selectedProduct != null && selectedProduct != _productType) {
+      setState(() {
+        _productType = selectedProduct!;
+        _controller.dispose();
+        _controller =
+            VideoPlayerController.asset(productTypeMovies[_productType]!)
+              ..initialize().then((_) {
+                setState(() {
+                  _controller.setLooping(true);
+                  _controller.play();
+                });
+              });
       });
     }
   }
@@ -143,7 +439,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            _goToVideoScreen();
+            _goToVideoScreen(context);
           });
         },
         child: const Icon(Icons.play_arrow),
@@ -154,7 +450,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
@@ -184,56 +480,80 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                         TableRow(
                           children: [
                             const Text('Wybierz język: '),
-                            SizedBox(width: space),
+                            SizedBox(width: _space),
                             MyButton(onPressed: () => {}, text: "Polski"),
-                            SizedBox(width: space),
+                            SizedBox(width: _space),
                           ],
                         ),
                         TableRow(
                           children: [
                             const Text('Wybierz produkt: '),
-                            SizedBox(width: space),
-                            MyButton(onPressed: () => {}, text: "Produkt 1"),
-                            SizedBox(width: space),
+                            SizedBox(width: _space),
+                            MyButton(
+                                onPressed: () => {_showProductTypeDialog()},
+                                text: productTypeNames[_productType]!),
+                            SizedBox(width: _space),
                           ],
                         ),
                         TableRow(
                           children: [
                             const Text('Wybierz typ \nprezentacji: '),
-                            SizedBox(width: space),
+                            SizedBox(width: _space),
                             MyButton(
                                 onPressed: () =>
                                     {_showPresentationTypeDialog()},
                                 text:
                                     presentationTypeNames[_presentationType]!),
-                            SizedBox(width: space),
+                            SizedBox(width: _space),
                           ],
                         ),
                         TableRow(
                           children: [
-                            const Text('Wpisz pojemność \nporcji: '),
-                            SizedBox(width: space),
+                            const Text('Ustaw parametry: '),
+                            SizedBox(width: _space),
                             MyButton(
-                                onPressed: () => {},
-                                text: "200ml / 300ml / 500ml"),
-                            SizedBox(width: space),
+                                onPressed: () => {_showSettingsDialog(context)},
+                                text: "Ustaw parametry"),
+                            SizedBox(width: _space),
                           ],
                         ),
                         TableRow(
                           children: [
-                            const Text('Wprowadź ceny: '),
-                            SizedBox(width: space),
+                            const Text('Kolor tekstu: '),
+                            SizedBox(width: _space),
                             MyButton(
-                                onPressed: () => {},
-                                text: "8 PLN / 10 PLN / 12 PLN"),
-                            SizedBox(width: space),
+                              onPressed: () => {_showColorPickerDialog()},
+                              text: colorToRgbString(currentColor),
+                              buttonColor: currentColor,
+                            ),
+                            SizedBox(width: _space),
                           ],
                         ),
                       ],
                     ),
                   ),
                   Expanded(
-                    child: VideoWidget(controller: _controller),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: VideoWidget(
+                          controller: _controller,
+                          textColor: currentColor,
+                          text: productTypeNames[_productType]!,
+                          selectedPortions: portionStates
+                              .where((portion) => portion['isChecked'])
+                              .toList(),
+                        )),
                   ),
                 ],
               ),
@@ -245,28 +565,71 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   }
 }
 
-class VideoWidget extends StatelessWidget {
-  const VideoWidget({
-    super.key,
-    required VideoPlayerController controller,
-  }) : _controller = controller;
+class FullScreenVideoScreen extends StatelessWidget {
+  final VideoPlayerController controller;
+  final Color textColor;
+  final String productTitleText;
+  final List<Map<String, dynamic>> selectedPortions;
 
-  final VideoPlayerController _controller;
+  const FullScreenVideoScreen({
+    super.key,
+    required this.controller,
+    this.textColor = Colors.white,
+    this.productTitleText = '',
+    required this.selectedPortions,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final whiteColumnWidth = screenWidth / 4;
-    final videoWidth = screenWidth - whiteColumnWidth;
-    final centerOffset = whiteColumnWidth / 2;
+    return Scaffold(
+      body: PopScope(
+        onPopInvoked: (bool didPop) {
+          if (didPop) {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                overlays: SystemUiOverlay.values);
+          }
+        },
+        child: VideoWidget(
+          controller: controller,
+          textColor: textColor,
+          text: productTitleText,
+          selectedPortions: selectedPortions,
+        ),
+      ),
+    );
+  }
+}
 
+class VideoWidget extends StatelessWidget {
+  const VideoWidget({
+    super.key,
+    required this.controller,
+    required this.textColor,
+    required this.text,
+    required this.selectedPortions,
+  });
+
+  final VideoPlayerController controller;
+  final Color textColor;
+  final String text;
+  final List<Map<String, dynamic>> selectedPortions;
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
-        _controller.value.isInitialized
-            ? VideoPlayer(_controller)
+        controller.value.isInitialized
+            ? VideoPlayer(controller)
             : const CircularProgressIndicator(),
-        ProductPricesOverlayWidget(controller: _controller),
-        const ProductTitleOverlay(text: 'LEMONIADA \nCYTRYNOWO-POMARAŃCZOWA')
+        ProductPricesOverlayWidget(
+          controller: controller,
+          textColor: textColor,
+          selectedPortions: selectedPortions,
+        ),
+        ProductTitleOverlay(
+          text: text,
+          textColor: textColor,
+        ),
       ],
     );
   }
@@ -276,9 +639,11 @@ class ProductTitleOverlay extends StatelessWidget {
   const ProductTitleOverlay({
     super.key,
     required this.text,
+    this.textColor = Colors.white,
   });
 
   final String text;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -302,9 +667,9 @@ class ProductTitleOverlay extends StatelessWidget {
               ),
               Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 30,
-                  color: Colors.brown,
+                  color: textColor,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -315,97 +680,87 @@ class ProductTitleOverlay extends StatelessWidget {
 }
 
 class ProductPricesOverlayWidget extends StatelessWidget {
+  final VideoPlayerController controller;
+  final Color textColor;
+  final List<Map<String, dynamic>> selectedPortions;
+
   const ProductPricesOverlayWidget({
     super.key,
-    required VideoPlayerController controller,
-  }) : _controller = controller;
-
-  final priceTextStyle = const TextStyle(
-    color: Colors.green,
-    fontSize: 20,
-    shadows: [
-      Shadow(
-        blurRadius: 5.0,
-        color: Colors.greenAccent,
-        offset: Offset(2.0, 2.0),
-      ),
-    ],
-  );
-  final VideoPlayerController _controller;
+    required this.controller,
+    required this.textColor,
+    required this.selectedPortions,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset(
-            'assets/images/logo_purena.png',
-            height: _controller.value.size.height / 25,
-          ),
-          Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double imageSize = constraints.maxHeight / 6;
+        double iconSize = constraints.maxHeight / 10;
+        double fontSize = constraints.maxHeight / 30;
+
+        List<Widget> productSizeColumns = selectedPortions.map((portion) {
+          return buildProductSizeColumn(
+              portion['assetPath']!,
+              portion['quantity']!,
+              portion['price']!,
+              iconSize,
+              fontSize,
+              textColor);
+        }).toList();
+
+        return Container(
+          color: Colors.white,
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SvgPicture.asset('assets/images/size_s.svg', height: 100),
-              Text(
-                '200 ml',
-                style: priceTextStyle,
+              Image.asset(
+                'assets/images/logo_purena.png',
+                height: imageSize,
               ),
-              Text(
-                '8 PLN',
-                style: priceTextStyle,
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              SvgPicture.asset('assets/images/size_m.svg', height: 100),
-              Text(
-                '300 ml',
-                style: priceTextStyle,
-              ),
-              Text(
-                '10 PLN',
-                style: priceTextStyle,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: productSizeColumns,
+                ),
               ),
             ],
           ),
-          Column(
-            children: [
-              SvgPicture.asset('assets/images/size_l.svg', height: 100),
-              Text(
-                '500 ml',
-                style: priceTextStyle,
-              ),
-              Text(
-                '12 PLN',
-                style: priceTextStyle,
-              ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
-}
 
-class FullScreenVideoScreen extends StatelessWidget {
-  final VideoPlayerController controller;
+  Column buildProductSizeColumn(String assetPath, String sizeText,
+      String priceText, double iconSize, double fontSize, Color currentColor) {
+    TextStyle adjustedTextStyle = TextStyle(
+      color: currentColor,
+      fontSize: fontSize,
+      fontWeight: FontWeight.bold,
+      fontFamily: GoogleFonts.lato().fontFamily,
+      shadows: const [
+        Shadow(
+          blurRadius: 5.0,
+          color: Colors.greenAccent,
+          offset: Offset(2.0, 2.0),
+        ),
+      ],
+    );
 
-  const FullScreenVideoScreen({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: PopScope(
-      onPopInvoked: (bool didPop) {
-        if (didPop) {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-              overlays: SystemUiOverlay.values);
-        }
-      },
-      child: VideoWidget(controller: controller),
-    ));
+    return Column(
+      children: [
+        SvgPicture.asset(assetPath, height: iconSize),
+        AutoSizeText(
+          sizeText,
+          style: adjustedTextStyle,
+          maxLines: 1,
+        ),
+        AutoSizeText(
+          priceText,
+          style: adjustedTextStyle,
+          maxLines: 1,
+        ),
+      ],
+    );
   }
 }
