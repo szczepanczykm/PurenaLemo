@@ -30,6 +30,99 @@ void main() {
   );
 }
 
+class TranslationService {
+  static final Map<String, Map<String, String>> _translations = {
+    'Polski': {
+      'choose_language': 'Wybierz język',
+      'choose_product': 'Wybierz produkt',
+      'choose_presentation_type': 'Wybierz typ prezentacji',
+      'set_parameters': 'Ustaw parametry',
+      'text_color': 'Kolor tekstu',
+      'lemonade_flavor': 'Lemoniada cytryna - pomarańcza',
+    },
+    'English': {
+      'choose_language': 'Choose language',
+      'choose_product': 'Choose product',
+      'choose_presentation_type': 'Choose presentation type',
+      'set_parameters': 'Set parameters',
+      'text_color': 'Text color',
+      'lemonade_flavor': 'Lemonade lemon - orange',
+    },
+    'Italiano': {
+      'choose_language': 'Scegli la lingua',
+      'choose_product': 'Scegli il prodotto',
+      'choose_presentation_type': 'Scegli il tipo di presentazione',
+      'set_parameters': 'Imposta i parametri',
+      'text_color': 'Colore del testo',
+      'lemonade_flavor': 'Limonata limone - arancia',
+    },
+    'Czech': {
+      'choose_language': 'Vyberte jazyk',
+      'choose_product': 'Vyberte produkt',
+      'choose_presentation_type': 'Vyberte typ prezentace',
+      'set_parameters': 'Nastavit parametry',
+      'text_color': 'Barva textu',
+      'lemonade_flavor': 'Limonáda citron - pomeranč',
+    },
+    'Dutch': {
+      'choose_language': 'Kies taal',
+      'choose_product': 'Kies product',
+      'choose_presentation_type': 'Kies presentatietype',
+      'set_parameters': 'Instellingen parameters',
+      'text_color': 'Tekstkleur',
+      'lemonade_flavor': 'Limonade citroen - sinaasappel',
+    },
+    // Add more languages here...
+  };
+  static final Map<String, Map<ProductType, String>> _productTranslations = {
+    'Polski': {
+      ProductType.product1: 'Lemoniada \ncytryna - pomarańcza',
+      ProductType.product2: 'Lemoniada \ncytryna – limetka',
+      ProductType.product3: 'Lemoniada \ncytryna – rabarbar',
+      ProductType.product4: 'Lemoniada \ncytryna – mango',
+      ProductType.product5: 'Lemoniada \ncytryna – malina',
+    },
+    'English': {
+      ProductType.product1: 'Lemonade \nlemon - orange',
+      ProductType.product2: 'Lemonade \nlemon – lime',
+      ProductType.product3: 'Lemonade \nlemon – rhubarb',
+      ProductType.product4: 'Lemonade \nlemon – mango',
+      ProductType.product5: 'Lemonade \nlemon – raspberry',
+    },
+    'Italiano': {
+      ProductType.product1: 'Limonata \nlimone - arancia',
+      ProductType.product2: 'Limonata \nlimone – lime',
+      ProductType.product3: 'Limonata \nlimone – rabarbaro',
+      ProductType.product4: 'Limonata \nlimone – mango',
+      ProductType.product5: 'Limonata \nlimone – lampone',
+    },
+    'Czech': {
+      ProductType.product1: 'Limonáda \ncitron - pomeranč',
+      ProductType.product2: 'Limonáda \ncitron – limetka',
+      ProductType.product3: 'Limonáda \ncitron – rebarbora',
+      ProductType.product4: 'Limonáda \ncitron – mango',
+      ProductType.product5: 'Limonáda \ncitron – malina',
+    },
+    'Dutch': {
+      ProductType.product1: 'Limonade \ncitroen - sinaasappel',
+      ProductType.product2: 'Limonade \ncitroen – limoen',
+      ProductType.product3: 'Limonade \ncitroen – rabarber',
+      ProductType.product4: 'Limonade \ncitroen – mango',
+      ProductType.product5: 'Limonade \ncitroen – framboos',
+    },
+    // Additional languages...
+  };
+
+  static String getTranslation(String language, String key) {
+    return _translations[language]?[key] ?? key;
+  }
+
+  static String getProductTranslation(
+      String language, ProductType productType) {
+    return _productTranslations[language]?[productType] ?? 'Unknown Product';
+  }
+}
+
 Widget getSvgPicture(String logoPath) {
   // if logoPath is an asset and logoPath ends with .svg
   if (logoPath.startsWith('assets/') && logoPath.endsWith(".svg")) {
@@ -112,9 +205,9 @@ enum PresentationType {
 }
 
 Map<PresentationType, String> presentationTypeNames = {
-  PresentationType.type1: 'Typ 1',
-  PresentationType.type2: 'Typ 2',
-  PresentationType.type3: 'Typ 3',
+  PresentationType.type1: '1',
+  PresentationType.type2: '2',
+  PresentationType.type3: '3',
 };
 
 enum ProductType {
@@ -126,11 +219,16 @@ enum ProductType {
 }
 
 Map<ProductType, String> productTypeNames = {
-  ProductType.product1: 'Lemoniada \ncytryna - pomarańcza',
-  ProductType.product2: 'Lemoniada \ncytryna – limetka',
-  ProductType.product3: 'Lemoniada \ncytryna – rabarbar',
-  ProductType.product4: 'Lemoniada \ncytryna – mango',
-  ProductType.product5: 'Lemoniada \ncytryna – malina',
+  ProductType.product1:
+      TranslationService.getProductTranslation('Polski', ProductType.product1),
+  ProductType.product2:
+      TranslationService.getProductTranslation('Polski', ProductType.product2),
+  ProductType.product3:
+      TranslationService.getProductTranslation('Polski', ProductType.product3),
+  ProductType.product4:
+      TranslationService.getProductTranslation('Polski', ProductType.product4),
+  ProductType.product5:
+      TranslationService.getProductTranslation('Polski', ProductType.product5),
 };
 
 Map<ProductType, String> productTypeMovies = {
@@ -176,6 +274,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   Color pickerColor = Colors.green;
   Color currentColor = Colors.green;
   String currentLanguage = 'Polski';
+
   List<Map<String, dynamic>> portionStates = [
     {
       'isChecked': true,
@@ -242,17 +341,19 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     super.dispose();
   }
 
-  String getTranslatedText(String text) {
-    Map<String, String> translations = {
-      'Polski': 'Wybierz język',
-      'English': 'Choose language',
-      'Italiano': 'Scegli la lingua',
-      'Cech': 'Vyberte jazyk',
-      // Assuming 'Cech' is meant to be Czech, the correct would be 'Čeština'
-      'Dutch': 'Kies taal',
+  void updateProductNames() {
+    productTypeNames = {
+      ProductType.product1: TranslationService.getProductTranslation(
+          currentLanguage, ProductType.product1),
+      ProductType.product2: TranslationService.getProductTranslation(
+          currentLanguage, ProductType.product2),
+      ProductType.product3: TranslationService.getProductTranslation(
+          currentLanguage, ProductType.product3),
+      ProductType.product4: TranslationService.getProductTranslation(
+          currentLanguage, ProductType.product4),
+      ProductType.product5: TranslationService.getProductTranslation(
+          currentLanguage, ProductType.product5),
     };
-
-    return translations[currentLanguage] ?? text;
   }
 
   void _goToVideoScreen(BuildContext context) {
@@ -320,7 +421,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setDialogState) {
             return AlertDialog(
-              title: const Text('Ustaw parametry'),
+              title: Text(TranslationService.getTranslation(
+                  currentLanguage, "set_parameters")),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
@@ -460,7 +562,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Wybierz typ prezentacji'),
+          title: Text(TranslationService.getTranslation(
+              currentLanguage, "choose_presentation_type")),
           children: PresentationType.values.map((type) {
             return SimpleDialogOption(
               onPressed: () {
@@ -488,7 +591,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Wybierz produkt'),
+          title: Text(TranslationService.getTranslation(
+              currentLanguage, "choose_product")),
           children: ProductType.values.map((product) {
             return SimpleDialogOption(
               onPressed: () {
@@ -523,13 +627,15 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Wybierz język'),
+          title: Text(TranslationService.getTranslation(
+              currentLanguage, "choose_language")),
           children: <Widget>[
             SimpleDialogOption(
               onPressed: () {
                 Navigator.pop(context, 'Polski');
                 setState(() {
                   currentLanguage = 'Polski';
+                  updateProductNames();
                 });
               },
               child: const Text('Polski'),
@@ -539,6 +645,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 Navigator.pop(context, 'English');
                 setState(() {
                   currentLanguage = 'English';
+                  updateProductNames();
                 });
               },
               child: const Text('English'),
@@ -548,6 +655,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 Navigator.pop(context, 'Italiano');
                 setState(() {
                   currentLanguage = 'Italiano';
+                  updateProductNames();
                 });
               },
               child: const Text('Italiano'),
@@ -557,6 +665,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 Navigator.pop(context, 'Czech');
                 setState(() {
                   currentLanguage = 'Czech';
+                  updateProductNames();
                 });
               },
               child: const Text('Czech'),
@@ -566,6 +675,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 Navigator.pop(context, 'Dutch');
                 setState(() {
                   currentLanguage = 'Dutch';
+                  updateProductNames();
                 });
               },
               child: const Text('Dutch'),
@@ -622,18 +732,20 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                       children: [
                         TableRow(
                           children: [
-                            Text('${getTranslatedText('Wybierz język')}: '),
+                            Text(
+                                '${TranslationService.getTranslation(currentLanguage, "choose_language")}: '),
                             SizedBox(width: _space),
                             MyButton(
                                 onPressed: () =>
                                     _showLanguageSelectionDialog(context),
-                                text: "Polski"),
+                                text: currentLanguage),
                             SizedBox(width: _space),
                           ],
                         ),
                         TableRow(
                           children: [
-                            const Text('Wybierz produkt: '),
+                            Text(TranslationService.getTranslation(
+                                currentLanguage, "choose_product")),
                             SizedBox(width: _space),
                             MyButton(
                                 onPressed: () => {_showProductTypeDialog()},
@@ -643,7 +755,8 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                         ),
                         TableRow(
                           children: [
-                            const Text('Wybierz typ \nprezentacji: '),
+                            Text(TranslationService.getTranslation(
+                                currentLanguage, "choose_presentation_type")),
                             SizedBox(width: _space),
                             MyButton(
                                 onPressed: () =>
@@ -655,17 +768,20 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                         ),
                         TableRow(
                           children: [
-                            const Text('Ustaw parametry: '),
+                            Text(TranslationService.getTranslation(
+                                currentLanguage, "set_parameters")),
                             SizedBox(width: _space),
                             MyButton(
                                 onPressed: () => {_showSettingsDialog(context)},
-                                text: "Ustaw parametry"),
+                                text: TranslationService.getTranslation(
+                                    currentLanguage, "set_parameters")),
                             SizedBox(width: _space),
                           ],
                         ),
                         TableRow(
                           children: [
-                            const Text('Kolor tekstu: '),
+                            Text(TranslationService.getTranslation(
+                                currentLanguage, "text_color")),
                             SizedBox(width: _space),
                             MyButton(
                               onPressed: () => {_showColorPickerDialog()},
