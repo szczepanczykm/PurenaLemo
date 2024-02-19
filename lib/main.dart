@@ -1,23 +1,94 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-/* ****************************************************************************
-1.	Wybierz język / choose language ( ok 6 języków)
-2.	Wybierz logo ( domyślne PURENA, personalizowane wgraj z lokalizacji …., wymogi …)
-3.	Wybierz produkt ( ok 7 produktów możliwych do wyboru)
-4.	Wybierz typ apletu ( i tu będą 3 sposoby prezentacji cenówek, podam)
-5.	Wybierz 2 z 3 formatów porcji (200 ml, XL  300 ml i  XXL 450 ml)
-6.	Przypisz ceny
-7.	Graj / Play
-******************************************************************************/
+class LogoState with ChangeNotifier {
+  String _logoUrl = 'assets/images/logo_purena.svg';
+
+  String get logoUrl => _logoUrl;
+
+  set logoUrl(String newValue) {
+    _logoUrl = newValue;
+    notifyListeners();
+  }
+}
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LogoState(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+Widget getSvgPicture(String logoPath) {
+  // if logoPath is an asset and logoPath ends with .svg
+  if (logoPath.startsWith('assets/') && logoPath.endsWith(".svg")) {
+    return SvgPicture.asset(
+      logoPath,
+      semanticsLabel: 'Purena Logo',
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  }
+  // if logoPath is a network URL and logoPath ends with .svg
+  else if (logoPath.startsWith('http') && logoPath.endsWith(".svg")) {
+    return SvgPicture.network(
+      logoPath,
+      semanticsLabel: 'Purena Logo',
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  }
+  // if logoPath is a device path and logoPath ends with .svg
+  else if (logoPath.startsWith('/') && logoPath.endsWith(".svg")) {
+    return SvgPicture.file(
+      File(logoPath),
+      semanticsLabel: 'Purena Logo',
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  }
+  // if logoPath is an asset and logoPath ends with .png
+  else if (logoPath.startsWith('assets/') && logoPath.endsWith(".png")) {
+    return Image.asset(
+      logoPath,
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  }
+  // if logoPath is a network URL and logoPath ends with .png
+  else if (logoPath.startsWith('http') && logoPath.endsWith(".png")) {
+    return Image.network(
+      logoPath,
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  }
+  // if logoPath is a device path and logoPath ends with .png
+  else if (logoPath.startsWith('/') && logoPath.endsWith(".png")) {
+    return Image.file(
+      File(logoPath),
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  } else {
+    return SvgPicture.asset(
+      'assets/images/logo_purena.svg',
+      semanticsLabel: 'Purena Logo',
+      height: 100,
+      fit: BoxFit.fitWidth,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -104,6 +175,7 @@ class MyHomeScreen extends StatefulWidget {
 class _MyHomeScreenState extends State<MyHomeScreen> {
   Color pickerColor = Colors.green;
   Color currentColor = Colors.green;
+  String currentLanguage = 'Polski';
   List<Map<String, dynamic>> portionStates = [
     {
       'isChecked': true,
@@ -170,6 +242,19 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     super.dispose();
   }
 
+  String getTranslatedText(String text) {
+    Map<String, String> translations = {
+      'Polski': 'Wybierz język',
+      'English': 'Choose language',
+      'Italiano': 'Scegli la lingua',
+      'Cech': 'Vyberte jazyk',
+      // Assuming 'Cech' is meant to be Czech, the correct would be 'Čeština'
+      'Dutch': 'Kies taal',
+    };
+
+    return translations[currentLanguage] ?? text;
+  }
+
   void _goToVideoScreen(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -179,6 +264,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           productTitleText: productTypeNames[_productType]!,
           selectedPortions:
               portionStates.where((portion) => portion['isChecked']).toList(),
+          presentationType: _presentationType,
         ),
       ),
     );
@@ -432,6 +518,64 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     }
   }
 
+  void _showLanguageSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Wybierz język'),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'Polski');
+                setState(() {
+                  currentLanguage = 'Polski';
+                });
+              },
+              child: const Text('Polski'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'English');
+                setState(() {
+                  currentLanguage = 'English';
+                });
+              },
+              child: const Text('English'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'Italiano');
+                setState(() {
+                  currentLanguage = 'Italiano';
+                });
+              },
+              child: const Text('Italiano'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'Czech');
+                setState(() {
+                  currentLanguage = 'Czech';
+                });
+              },
+              child: const Text('Czech'),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 'Dutch');
+                setState(() {
+                  currentLanguage = 'Dutch';
+                });
+              },
+              child: const Text('Dutch'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -453,13 +597,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(
-                    'assets/images/logo_purena.svg',
-                    semanticsLabel: 'Purena Logo',
-                    height: 100,
-                    fit: BoxFit.fitWidth,
-                  ),
-                  MyButton(onPressed: () => {}, text: "Wybierz logo...")
+                  getSvgPicture(Provider.of<LogoState>(context).logoUrl),
+                  MyButton(
+                      onPressed: () => {
+                            _showSelectLogoDialog(context),
+                          },
+                      text: "Wybierz logo...")
                 ],
               ),
             ),
@@ -479,9 +622,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                       children: [
                         TableRow(
                           children: [
-                            const Text('Wybierz język: '),
+                            Text('${getTranslatedText('Wybierz język')}: '),
                             SizedBox(width: _space),
-                            MyButton(onPressed: () => {}, text: "Polski"),
+                            MyButton(
+                                onPressed: () =>
+                                    _showLanguageSelectionDialog(context),
+                                text: "Polski"),
                             SizedBox(width: _space),
                           ],
                         ),
@@ -533,28 +679,27 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                          border: Border.all(color: Colors.white),
-                        ),
-                        child: VideoWidget(
-                          controller: _controller,
-                          textColor: currentColor,
-                          text: productTypeNames[_productType]!,
-                          selectedPortions: portionStates
-                              .where((portion) => portion['isChecked'])
-                              .toList(),
-                        )),
-                  ),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                            border: Border.all(color: Colors.white),
+                          ),
+                          child: VideoWidget(
+                              controller: _controller,
+                              textColor: currentColor,
+                              text: productTypeNames[_productType]!,
+                              selectedPortions: portionStates
+                                  .where((portion) => portion['isChecked'])
+                                  .toList(),
+                              presentationType: _presentationType))),
                 ],
               ),
             ),
@@ -565,11 +710,64 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   }
 }
 
+void _showSelectLogoDialog(BuildContext context) {
+  TextEditingController logoUrlController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Select Logo'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Text('Enter the URL of your logo.'),
+            TextField(
+              controller: logoUrlController,
+              decoration: const InputDecoration(hintText: "Logo URL"),
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    type: FileType.custom,
+                    allowedExtensions: ['svg', 'png'],
+                  );
+                  if (result != null && result.files.single.path != null) {
+                    String filePath = result.files.single.path!;
+                    logoUrlController.text = filePath;
+                  }
+                },
+                child: const Text('Select Logo...')),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Provider.of<LogoState>(context, listen: false).logoUrl =
+                  logoUrlController.text;
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 class FullScreenVideoScreen extends StatelessWidget {
   final VideoPlayerController controller;
   final Color textColor;
   final String productTitleText;
   final List<Map<String, dynamic>> selectedPortions;
+  final PresentationType presentationType;
 
   const FullScreenVideoScreen({
     super.key,
@@ -577,6 +775,7 @@ class FullScreenVideoScreen extends StatelessWidget {
     this.textColor = Colors.white,
     this.productTitleText = '',
     required this.selectedPortions,
+    required this.presentationType,
   });
 
   @override
@@ -594,6 +793,7 @@ class FullScreenVideoScreen extends StatelessWidget {
           textColor: textColor,
           text: productTitleText,
           selectedPortions: selectedPortions,
+          presentationType: presentationType,
         ),
       ),
     );
@@ -601,18 +801,19 @@ class FullScreenVideoScreen extends StatelessWidget {
 }
 
 class VideoWidget extends StatelessWidget {
-  const VideoWidget({
-    super.key,
-    required this.controller,
-    required this.textColor,
-    required this.text,
-    required this.selectedPortions,
-  });
+  const VideoWidget(
+      {super.key,
+      required this.controller,
+      required this.textColor,
+      required this.text,
+      required this.selectedPortions,
+      required this.presentationType});
 
   final VideoPlayerController controller;
   final Color textColor;
   final String text;
   final List<Map<String, dynamic>> selectedPortions;
+  final PresentationType presentationType;
 
   @override
   Widget build(BuildContext context) {
@@ -625,10 +826,12 @@ class VideoWidget extends StatelessWidget {
           controller: controller,
           textColor: textColor,
           selectedPortions: selectedPortions,
+          presentationType: presentationType,
         ),
         ProductTitleOverlay(
           text: text,
           textColor: textColor,
+          presentationType: presentationType,
         ),
       ],
     );
@@ -636,46 +839,115 @@ class VideoWidget extends StatelessWidget {
 }
 
 class ProductTitleOverlay extends StatelessWidget {
-  const ProductTitleOverlay({
-    super.key,
-    required this.text,
-    this.textColor = Colors.white,
-  });
+  const ProductTitleOverlay(
+      {super.key,
+      required this.text,
+      this.textColor = Colors.white,
+      required this.presentationType});
 
   final String text;
   final Color textColor;
+  final PresentationType presentationType;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-          padding: const EdgeInsetsDirectional.only(start: 120, bottom: 30),
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 30,
-                  foreground: Paint()
-                    ..style = PaintingStyle.stroke
-                    ..strokeWidth = 4
-                    ..color = Colors.white,
+    return LayoutBuilder(builder: (context, constraints) {
+      if (presentationType == PresentationType.type1) {
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+              padding: const EdgeInsetsDirectional.only(start: 120, bottom: 30),
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 30,
+                      foreground: Paint()
+                        ..style = PaintingStyle.stroke
+                        ..strokeWidth = 4
+                        ..color = Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: textColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              )),
+        );
+      } else if (presentationType == PresentationType.type2) {
+        return Align(
+          alignment: Alignment.bottomCenter, // Keep this to align horizontally
+          child: Padding(
+            // Adjust the padding to lift the text up above the white row
+            padding: EdgeInsets.only(bottom: constraints.maxHeight / 4),
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 30,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 4
+                      ..color = Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 30,
-                  color: textColor,
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: textColor,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          )),
-    );
+              ],
+            ),
+          ),
+        );
+      } else {
+        return Align(
+          alignment: Alignment.bottomCenter, // Keep this to align horizontally
+          child: Padding(
+            // Adjust the padding to lift the text up above the white row
+            padding: EdgeInsets.only(bottom: constraints.maxHeight / 2.2),
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 30,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 4
+                      ..color = Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: textColor,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    });
   }
 }
 
@@ -683,21 +955,22 @@ class ProductPricesOverlayWidget extends StatelessWidget {
   final VideoPlayerController controller;
   final Color textColor;
   final List<Map<String, dynamic>> selectedPortions;
+  final PresentationType presentationType;
 
-  const ProductPricesOverlayWidget({
-    super.key,
-    required this.controller,
-    required this.textColor,
-    required this.selectedPortions,
-  });
+  const ProductPricesOverlayWidget(
+      {super.key,
+      required this.controller,
+      required this.textColor,
+      required this.selectedPortions,
+      required this.presentationType});
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
+    return LayoutBuilder(builder: (context, constraints) {
+      if (presentationType == PresentationType.type1) {
         double imageSize = constraints.maxHeight / 6;
-        double iconSize = constraints.maxHeight / 10;
-        double fontSize = constraints.maxHeight / 30;
+        double iconSize = constraints.maxHeight / 7;
+        double fontSize = constraints.maxHeight / 25;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
           return buildProductSizeColumn(
@@ -714,10 +987,7 @@ class ProductPricesOverlayWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/images/logo_purena.png',
-                height: imageSize,
-              ),
+              getSvgPicture(Provider.of<LogoState>(context).logoUrl),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -727,8 +997,82 @@ class ProductPricesOverlayWidget extends StatelessWidget {
             ],
           ),
         );
-      },
-    );
+      } else if (presentationType == PresentationType.type2) {
+        double imageSize = constraints.maxHeight / 9;
+        double iconSize = constraints.maxHeight / 10;
+        double fontSize = constraints.maxHeight / 30;
+
+        List<Widget> productSizeColumns = selectedPortions.map((portion) {
+          return buildProductSizeColumn(
+              portion['assetPath']!,
+              portion['quantity']!,
+              portion['price']!,
+              iconSize,
+              fontSize,
+              textColor);
+        }).toList();
+
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: imageSize / 3),
+                child: getSvgPicture(Provider.of<LogoState>(context).logoUrl),
+              ),
+              Container(
+                height: imageSize * 2,
+                // This is the height of the area for the product sizes.
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: productSizeColumns,
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        double imageSize = constraints.maxHeight / 5;
+        double iconSize = constraints.maxHeight / 4;
+        double fontSize = constraints.maxHeight / 22;
+
+        List<Widget> productSizeColumns = selectedPortions.map((portion) {
+          return buildProductSizeColumn(
+              portion['assetPath']!,
+              portion['quantity']!,
+              portion['price']!,
+              iconSize,
+              fontSize,
+              textColor);
+        }).toList();
+
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: imageSize / 3),
+                child: getSvgPicture(Provider.of<LogoState>(context).logoUrl),
+              ),
+              Container(
+                height: imageSize * 2,
+                // This is the height of the area for the product sizes.
+                color: Colors.white.withOpacity(0.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: productSizeColumns,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    });
   }
 
   Column buildProductSizeColumn(String assetPath, String sizeText,
@@ -738,16 +1082,12 @@ class ProductPricesOverlayWidget extends StatelessWidget {
       fontSize: fontSize,
       fontWeight: FontWeight.bold,
       fontFamily: GoogleFonts.lato().fontFamily,
-      shadows: const [
-        Shadow(
-          blurRadius: 5.0,
-          color: Colors.greenAccent,
-          offset: Offset(2.0, 2.0),
-        ),
-      ],
+      // other style properties
     );
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      // Center column items vertically
       children: [
         SvgPicture.asset(assetPath, height: iconSize),
         AutoSizeText(
