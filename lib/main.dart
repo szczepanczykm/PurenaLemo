@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -83,11 +82,11 @@ class TranslationService {
       ProductType.product5: 'Lemoniada \ncytryna – malina',
     },
     'English': {
-      ProductType.product1: 'Lemonade \nlemon - orange',
-      ProductType.product2: 'Lemonade \nlemon – lime',
-      ProductType.product3: 'Lemonade \nlemon – rhubarb',
-      ProductType.product4: 'Lemonade \nlemon – mango',
-      ProductType.product5: 'Lemonade \nlemon – raspberry',
+      ProductType.product1: 'Lemon - orange\nlemonade ',
+      ProductType.product2: 'Lemon – lime\nlemonade ',
+      ProductType.product3: 'Lemon – rhubarb\nlemonade ',
+      ProductType.product4: 'Lemon – mango\nlemonade ',
+      ProductType.product5: 'Lemon – raspberry\nlemonade ',
     },
     'Italiano': {
       ProductType.product1: 'Limonata \nlimone - arancia',
@@ -1084,9 +1083,8 @@ class ProductPricesOverlayWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       if (presentationType == PresentationType.type1) {
-        double imageSize = constraints.maxHeight / 6;
         double iconSize = constraints.maxHeight / 7;
-        double fontSize = constraints.maxHeight / 25;
+        double fontSize = constraints.maxHeight / 23;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
           return buildProductSizeColumn(
@@ -1116,7 +1114,7 @@ class ProductPricesOverlayWidget extends StatelessWidget {
       } else if (presentationType == PresentationType.type2) {
         double imageSize = constraints.maxHeight / 9;
         double iconSize = constraints.maxHeight / 10;
-        double fontSize = constraints.maxHeight / 30;
+        double fontSize = constraints.maxHeight / 28;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
           return buildProductSizeColumn(
@@ -1153,7 +1151,7 @@ class ProductPricesOverlayWidget extends StatelessWidget {
       } else {
         double imageSize = constraints.maxHeight / 5;
         double iconSize = constraints.maxHeight / 4;
-        double fontSize = constraints.maxHeight / 22;
+        double fontSize = constraints.maxHeight / 21;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
           return buildProductSizeColumn(
@@ -1196,8 +1194,8 @@ class ProductPricesOverlayWidget extends StatelessWidget {
     TextStyle adjustedTextStyle = TextStyle(
       color: currentColor,
       fontSize: fontSize,
-      fontWeight: FontWeight.bold,
-      fontFamily: GoogleFonts.lato().fontFamily,
+      fontWeight: FontWeight.w800,
+      fontFamily: 'Roboto Mono',
       // other style properties
     );
 
