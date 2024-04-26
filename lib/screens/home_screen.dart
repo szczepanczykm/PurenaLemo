@@ -13,6 +13,7 @@ import '../constants/maps.dart';
 import '../models/logo_state.dart';
 import '../services/translation_service.dart';
 import '../utils/svg_utils.dart';
+import 'dialogs/settings_dialog.dart';
 
 class MyHomeScreen extends StatefulWidget {
   const MyHomeScreen({super.key});
@@ -155,89 +156,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               },
             ),
           ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showSettingsDialog(BuildContext context) async {
-    bool localIsChecked1 = isChecked1;
-    bool localIsChecked2 = isChecked2;
-    bool localIsChecked3 = isChecked3;
-
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setDialogState) {
-            return AlertDialog(
-              title: Text(TranslationService.getTranslation(
-                  currentLanguage, "set_parameters")),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    _settingsRow(context, 0, localIsChecked1, setDialogState,
-                        (bool? value) {
-                      localIsChecked1 = value ?? localIsChecked1;
-                    }),
-                    _settingsRow(context, 1, localIsChecked2, setDialogState,
-                        (bool? value) {
-                      localIsChecked2 = value ?? localIsChecked2;
-                    }),
-                    _settingsRow(context, 2, localIsChecked3, setDialogState,
-                        (bool? value) {
-                      localIsChecked3 = value ?? localIsChecked3;
-                    }),
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Anuluj'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Zapisz'),
-                  onPressed: () {
-                    setState(() {
-                      portionStates[0]['quantity'] =
-                          _quantityController1.text.isNotEmpty
-                              ? _quantityController1.text
-                              : portionStates[0]['quantity'];
-                      portionStates[0]['price'] =
-                          _priceController1.text.isNotEmpty
-                              ? _priceController1.text
-                              : portionStates[0]['price'];
-                      portionStates[1]['quantity'] =
-                          _quantityController2.text.isNotEmpty
-                              ? _quantityController2.text
-                              : portionStates[1]['quantity'];
-                      portionStates[1]['price'] =
-                          _priceController2.text.isNotEmpty
-                              ? _priceController2.text
-                              : portionStates[1]['price'];
-                      portionStates[2]['quantity'] =
-                          _quantityController3.text.isNotEmpty
-                              ? _quantityController3.text
-                              : portionStates[2]['quantity'];
-                      portionStates[2]['price'] =
-                          _priceController3.text.isNotEmpty
-                              ? _priceController3.text
-                              : portionStates[2]['price'];
-
-                      isChecked1 = localIsChecked1;
-                      isChecked2 = localIsChecked2;
-                      isChecked3 = localIsChecked3;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
         );
       },
     );
@@ -575,7 +493,34 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                                 currentLanguage, "set_parameters")),
                             SizedBox(width: _space),
                             MyButton(
-                                onPressed: () => {_showSettingsDialog(context)},
+                                onPressed: () => {
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (BuildContext context) {
+                                          return SettingsDialog(
+                                            portionStates: portionStates,
+                                            quantityControllers: [
+                                              _quantityController1,
+                                              _quantityController2,
+                                              _quantityController3,
+                                            ],
+                                            priceControllers: [
+                                              _priceController1,
+                                              _priceController2,
+                                              _priceController3,
+                                            ],
+                                            onSave: (updatedPortionStates) {
+                                              setState(() {
+                                                portionStates =
+                                                    updatedPortionStates;
+                                              });
+                                            },
+                                            currentLanguage: currentLanguage,
+                                          );
+                                        },
+                                      )
+                                    },
                                 text: TranslationService.getTranslation(
                                     currentLanguage, "set_parameters")),
                             SizedBox(width: _space),
