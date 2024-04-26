@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:purena_lemo/screens/video_screen.dart';
 import 'package:purena_lemo/screens/widgets/my_button.dart';
@@ -12,6 +11,7 @@ import '../constants/maps.dart';
 import '../models/logo_state.dart';
 import '../services/translation_service.dart';
 import '../utils/svg_utils.dart';
+import 'dialogs/color_picker_dialog.dart';
 import 'dialogs/language_selection_dialog.dart';
 import 'dialogs/presentation_type_dialog.dart';
 import 'dialogs/product_type_dialog.dart';
@@ -131,39 +131,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     return 'RGB(${color.red}, ${color.green}, ${color.blue})';
   }
 
-  void _showColorPickerDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Wybierz kolor'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: pickerColor,
-              onColorChanged: (Color color) {
-                setState(() {
-                  pickerColor = color;
-                });
-              },
-              pickerAreaHeightPercent: 0.8,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                setState(() {
-                  currentColor = pickerColor;
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,8 +242,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
               SizedBox(width: _space),
               MyButton(
                 onPressed: () async {
-                  PresentationType? selectedType =
-                      await showDialog<PresentationType>(
+                  await showDialog<PresentationType>(
                     context: context,
                     builder: (BuildContext context) {
                       return PresentationTypeDialog(
@@ -341,7 +307,21 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                   currentLanguage, "text_color")),
               SizedBox(width: _space),
               MyButton(
-                onPressed: () => {_showColorPickerDialog()},
+                onPressed: () async {
+                  await showDialog<Color>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ColorPickerDialog(
+                        initialColor: currentColor,
+                        onColorSelected: (Color color) {
+                          setState(() {
+                            currentColor = color;
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
                 text: colorToRgbString(currentColor),
                 buttonColor: currentColor,
               ),
