@@ -9,6 +9,7 @@ import 'package:video_player/video_player.dart';
 import '../constants/enums.dart';
 import '../constants/maps.dart';
 import '../models/logo_state.dart';
+import '../models/portion_state.dart';
 import '../services/translation_service.dart';
 import '../utils/svg_utils.dart';
 import 'dialogs/color_picker_dialog.dart';
@@ -30,25 +31,25 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
   Color currentColor = Colors.green;
   String currentLanguage = 'Polski';
 
-  List<Map<String, dynamic>> portionStates = [
-    {
-      'isChecked': true,
-      'quantity': '200 ml',
-      'price': '7 PLN',
-      'assetPath': 'assets/images/size_s.svg',
-    },
-    {
-      'isChecked': true,
-      'quantity': '300 ml',
-      'price': '9 PLN',
-      'assetPath': 'assets/images/size_m.svg',
-    },
-    {
-      'isChecked': true,
-      'quantity': '500 ml',
-      'price': '13 PLN',
-      'assetPath': 'assets/images/size_l.svg',
-    },
+  List<PortionState> portionStates = [
+    PortionState(
+      isChecked: true,
+      quantity: '200 ml',
+      price: '7 PLN',
+      assetPath: 'assets/images/size_s.svg',
+    ),
+    PortionState(
+      isChecked: true,
+      quantity: '300 ml',
+      price: '9 PLN',
+      assetPath: 'assets/images/size_m.svg',
+    ),
+    PortionState(
+      isChecked: true,
+      quantity: '500 ml',
+      price: '13 PLN',
+      assetPath: 'assets/images/size_l.svg',
+    ),
   ];
 
   bool isChecked1 = true;
@@ -119,7 +120,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
           textColor: currentColor,
           productTitleText: productTypeNames[_productType]!,
           selectedPortions:
-              portionStates.where((portion) => portion['isChecked']).toList(),
+              portionStates.where((portion) => portion.isChecked).toList(),
           presentationType: _presentationType,
         ),
       ),
@@ -376,7 +377,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                 textColor: currentColor,
                 text: productTypeNames[_productType]!,
                 selectedPortions: portionStates
-                    .where((portion) => portion['isChecked'])
+                    .where((portion) => portion.isChecked)
                     .toList(),
                 presentationType: _presentationType)));
   }

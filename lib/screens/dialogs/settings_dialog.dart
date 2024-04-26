@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:purena_lemo/services/translation_service.dart';
 
+import '../../models/portion_state.dart';
 import '../widgets/settings_row.dart';
 
 class SettingsDialog extends StatefulWidget {
-  final List<Map<String, dynamic>> portionStates;
+  final List<PortionState> portionStates;
   final List<TextEditingController> quantityControllers;
   final List<TextEditingController> priceControllers;
-  final Function(List<Map<String, dynamic>>) onSave;
+  final Function(List<PortionState>) onSave;
   final String currentLanguage;
 
   const SettingsDialog({
@@ -30,9 +31,9 @@ class SettingsDialogState extends State<SettingsDialog> {
   void initState() {
     super.initState();
     localIsChecked = [
-      widget.portionStates[0]['isChecked'],
-      widget.portionStates[1]['isChecked'],
-      widget.portionStates[2]['isChecked'],
+      widget.portionStates[0].isChecked,
+      widget.portionStates[1].isChecked,
+      widget.portionStates[2].isChecked,
     ];
   }
 
@@ -90,70 +91,22 @@ class SettingsDialogState extends State<SettingsDialog> {
         TextButton(
           child: const Text('Zapisz'),
           onPressed: () {
-            List<Map<String, dynamic>> updatedPortionStates =
+            List<PortionState> updatedPortionStates =
                 List.from(widget.portionStates);
             for (int i = 0; i < updatedPortionStates.length; i++) {
-              updatedPortionStates[i]['quantity'] =
+              updatedPortionStates[i].quantity =
                   widget.quantityControllers[i].text.isNotEmpty
                       ? widget.quantityControllers[i].text
-                      : updatedPortionStates[i]['quantity'];
-              updatedPortionStates[i]['price'] =
+                      : updatedPortionStates[i].quantity;
+              updatedPortionStates[i].price =
                   widget.priceControllers[i].text.isNotEmpty
                       ? widget.priceControllers[i].text
-                      : updatedPortionStates[i]['price'];
-              updatedPortionStates[i]['isChecked'] = localIsChecked[i];
+                      : updatedPortionStates[i].price;
+              updatedPortionStates[i].isChecked = localIsChecked[i];
             }
             widget.onSave(updatedPortionStates);
             Navigator.of(context).pop();
           },
-        ),
-      ],
-    );
-  }
-
-  Widget _settingsRow(BuildContext context, int rowNumber, bool isChecked,
-      Function(bool?) onChanged) {
-    String portionTitle = "${rowNumber + 1}.";
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Text(portionTitle, textAlign: TextAlign.right),
-        ),
-        Checkbox(
-          value: isChecked,
-          onChanged: onChanged,
-        ),
-        Expanded(
-          flex: 3,
-          child: TextField(
-            style: const TextStyle(
-              fontFamily: 'Regular',
-            ),
-            controller: widget.quantityControllers[rowNumber],
-            decoration: const InputDecoration(
-              helperText: "200 ml",
-              hintText: 'Ilość',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          flex: 3,
-          child: TextField(
-            style: const TextStyle(
-              fontFamily: 'Regular',
-            ),
-            controller: widget.priceControllers[rowNumber],
-            decoration: const InputDecoration(
-              helperText: "10 PLN",
-              hintText: 'Cena',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            ),
-          ),
         ),
       ],
     );

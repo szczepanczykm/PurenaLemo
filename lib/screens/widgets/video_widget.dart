@@ -4,6 +4,7 @@ import 'package:purena_lemo/screens/widgets/product_title_overlay.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../constants/enums.dart';
+import '../../models/portion_state.dart';
 
 class VideoWidget extends StatelessWidget {
   const VideoWidget(
@@ -17,7 +18,7 @@ class VideoWidget extends StatelessWidget {
   final VideoPlayerController controller;
   final Color textColor;
   final String text;
-  final List<Map<String, dynamic>> selectedPortions;
+  final List<PortionState> selectedPortions;
   final PresentationType presentationType;
 
   @override

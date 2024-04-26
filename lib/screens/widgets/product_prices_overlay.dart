@@ -6,12 +6,13 @@ import 'package:video_player/video_player.dart';
 
 import '../../constants/enums.dart';
 import '../../models/logo_state.dart';
+import '../../models/portion_state.dart';
 import '../../utils/svg_utils.dart';
 
 class ProductPricesOverlayWidget extends StatelessWidget {
   final VideoPlayerController controller;
   final Color textColor;
-  final List<Map<String, dynamic>> selectedPortions;
+  final List<PortionState> selectedPortions;
   final PresentationType presentationType;
 
   const ProductPricesOverlayWidget(
@@ -29,13 +30,8 @@ class ProductPricesOverlayWidget extends StatelessWidget {
         double fontSize = constraints.maxHeight / 23;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
-          return buildProductSizeColumn(
-              portion['assetPath']!,
-              portion['quantity']!,
-              portion['price']!,
-              iconSize,
-              fontSize,
-              textColor);
+          return buildProductSizeColumn(portion.assetPath, portion.quantity,
+              portion.price, iconSize, fontSize, textColor);
         }).toList();
 
         return Container(
@@ -59,13 +55,8 @@ class ProductPricesOverlayWidget extends StatelessWidget {
         double fontSize = constraints.maxHeight / 28;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
-          return buildProductSizeColumn(
-              portion['assetPath']!,
-              portion['quantity']!,
-              portion['price']!,
-              iconSize,
-              fontSize,
-              textColor);
+          return buildProductSizeColumn(portion.assetPath, portion.quantity,
+              portion.price, iconSize, fontSize, textColor);
         }).toList();
 
         return Align(
@@ -95,13 +86,8 @@ class ProductPricesOverlayWidget extends StatelessWidget {
         double fontSize = constraints.maxHeight / 21;
 
         List<Widget> productSizeColumns = selectedPortions.map((portion) {
-          return buildProductSizeColumn(
-              portion['assetPath']!,
-              portion['quantity']!,
-              portion['price']!,
-              iconSize,
-              fontSize,
-              textColor);
+          return buildProductSizeColumn(portion.assetPath, portion.quantity,
+              portion.price, iconSize, fontSize, textColor);
         }).toList();
 
         return Align(

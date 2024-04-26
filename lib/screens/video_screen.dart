@@ -4,12 +4,13 @@ import 'package:purena_lemo/screens/widgets/video_widget.dart';
 import 'package:video_player/video_player.dart';
 
 import '../constants/enums.dart';
+import '../models/portion_state.dart';
 
 class FullScreenVideoScreen extends StatelessWidget {
   final VideoPlayerController controller;
   final Color textColor;
   final String productTitleText;
-  final List<Map<String, dynamic>> selectedPortions;
+  final List<PortionState> selectedPortions;
   final PresentationType presentationType;
 
   const FullScreenVideoScreen({
