@@ -4,51 +4,62 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 
 Widget getSvgPicture(String logoPath) {
-  if (logoPath.startsWith('assets/') && logoPath.endsWith(".svg")) {
-    return SvgPicture.asset(
-      logoPath,
-      semanticsLabel: 'Purena Logo',
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
-  } else if (logoPath.startsWith('http') && logoPath.endsWith(".svg")) {
-    return SvgPicture.network(
-      logoPath,
-      semanticsLabel: 'Purena Logo',
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
-  } else if (logoPath.startsWith('/') && logoPath.endsWith(".svg")) {
-    return SvgPicture.file(
-      File(logoPath),
-      semanticsLabel: 'Purena Logo',
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
-  } else if (logoPath.startsWith('assets/') && logoPath.endsWith(".png")) {
-    return Image.asset(
-      logoPath,
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
-  } else if (logoPath.startsWith('http') && logoPath.endsWith(".png")) {
-    return Image.network(
-      logoPath,
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
-  } else if (logoPath.startsWith('/') && logoPath.endsWith(".png")) {
-    return Image.file(
-      File(logoPath),
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
-  } else {
-    return SvgPicture.asset(
-      'assets/images/logo_purena.svg',
-      semanticsLabel: 'Purena Logo',
-      height: 100,
-      fit: BoxFit.fitWidth,
-    );
+  var semanticsLabel = 'Purena Logo';
+  var fitType = BoxFit.fitWidth;
+  var height = 100.0;
+
+  var svgExtension = ".svg";
+  var pngExtension = ".png";
+  if (logoPath.startsWith('assets/')) {
+    if (logoPath.endsWith(svgExtension)) {
+      return SvgPicture.asset(
+        logoPath,
+        semanticsLabel: semanticsLabel,
+        height: height,
+        fit: fitType,
+      );
+    } else if (logoPath.endsWith(pngExtension)) {
+      return Image.asset(
+        logoPath,
+        height: height,
+        fit: fitType,
+      );
+    }
+  } else if (logoPath.startsWith('http')) {
+    if (logoPath.endsWith(svgExtension)) {
+      return SvgPicture.network(
+        logoPath,
+        semanticsLabel: semanticsLabel,
+        height: height,
+        fit: fitType,
+      );
+    } else if (logoPath.endsWith(pngExtension)) {
+      return Image.network(
+        logoPath,
+        height: height,
+        fit: fitType,
+      );
+    }
+  } else if (logoPath.startsWith('/')) {
+    if (logoPath.endsWith(svgExtension)) {
+      return SvgPicture.file(
+        File(logoPath),
+        semanticsLabel: semanticsLabel,
+        height: height,
+        fit: fitType,
+      );
+    } else if (logoPath.endsWith(pngExtension)) {
+      return Image.file(
+        File(logoPath),
+        height: height,
+        fit: fitType,
+      );
+    }
   }
+  return SvgPicture.asset(
+    'assets/images/logo_purena.svg',
+    semanticsLabel: semanticsLabel,
+    height: height,
+    fit: fitType,
+  );
 }
