@@ -71,7 +71,6 @@ class TranslationService {
       'text_color': 'Tekstkleur',
       'lemonade_flavor': 'Limonade citroen - sinaasappel',
     },
-    // Add more languages here...
   };
   static final Map<String, Map<ProductType, String>> _productTranslations = {
     'Polski': {
@@ -109,7 +108,6 @@ class TranslationService {
       ProductType.product4: 'Limonade \ncitroen – mango',
       ProductType.product5: 'Limonade \ncitroen – framboos',
     },
-    // Additional languages...
   };
 
   static String getTranslation(String language, String key) {
@@ -123,7 +121,6 @@ class TranslationService {
 }
 
 Widget getSvgPicture(String logoPath) {
-  // if logoPath is an asset and logoPath ends with .svg
   if (logoPath.startsWith('assets/') && logoPath.endsWith(".svg")) {
     return SvgPicture.asset(
       logoPath,
@@ -131,43 +128,33 @@ Widget getSvgPicture(String logoPath) {
       height: 100,
       fit: BoxFit.fitWidth,
     );
-  }
-  // if logoPath is a network URL and logoPath ends with .svg
-  else if (logoPath.startsWith('http') && logoPath.endsWith(".svg")) {
+  } else if (logoPath.startsWith('http') && logoPath.endsWith(".svg")) {
     return SvgPicture.network(
       logoPath,
       semanticsLabel: 'Purena Logo',
       height: 100,
       fit: BoxFit.fitWidth,
     );
-  }
-  // if logoPath is a device path and logoPath ends with .svg
-  else if (logoPath.startsWith('/') && logoPath.endsWith(".svg")) {
+  } else if (logoPath.startsWith('/') && logoPath.endsWith(".svg")) {
     return SvgPicture.file(
       File(logoPath),
       semanticsLabel: 'Purena Logo',
       height: 100,
       fit: BoxFit.fitWidth,
     );
-  }
-  // if logoPath is an asset and logoPath ends with .png
-  else if (logoPath.startsWith('assets/') && logoPath.endsWith(".png")) {
+  } else if (logoPath.startsWith('assets/') && logoPath.endsWith(".png")) {
     return Image.asset(
       logoPath,
       height: 100,
       fit: BoxFit.fitWidth,
     );
-  }
-  // if logoPath is a network URL and logoPath ends with .png
-  else if (logoPath.startsWith('http') && logoPath.endsWith(".png")) {
+  } else if (logoPath.startsWith('http') && logoPath.endsWith(".png")) {
     return Image.network(
       logoPath,
       height: 100,
       fit: BoxFit.fitWidth,
     );
-  }
-  // if logoPath is a device path and logoPath ends with .png
-  else if (logoPath.startsWith('/') && logoPath.endsWith(".png")) {
+  } else if (logoPath.startsWith('/') && logoPath.endsWith(".png")) {
     return Image.file(
       File(logoPath),
       height: 100,
@@ -999,9 +986,8 @@ class ProductTitleOverlay extends StatelessWidget {
         );
       } else if (presentationType == PresentationType.type2) {
         return Align(
-          alignment: Alignment.bottomCenter, // Keep this to align horizontally
+          alignment: Alignment.bottomCenter,
           child: Padding(
-            // Adjust the padding to lift the text up above the white row
             padding: EdgeInsets.only(bottom: constraints.maxHeight / 4),
             child: Stack(
               alignment: Alignment.center,
@@ -1031,9 +1017,8 @@ class ProductTitleOverlay extends StatelessWidget {
         );
       } else {
         return Align(
-          alignment: Alignment.bottomCenter, // Keep this to align horizontally
+          alignment: Alignment.bottomCenter,
           child: Padding(
-            // Adjust the padding to lift the text up above the white row
             padding: EdgeInsets.only(bottom: constraints.maxHeight / 2.2),
             child: Stack(
               alignment: Alignment.center,
@@ -1137,7 +1122,6 @@ class ProductPricesOverlayWidget extends StatelessWidget {
               ),
               Container(
                 height: imageSize * 2,
-                // This is the height of the area for the product sizes.
                 color: Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1174,7 +1158,6 @@ class ProductPricesOverlayWidget extends StatelessWidget {
               ),
               Container(
                 height: imageSize * 2,
-                // This is the height of the area for the product sizes.
                 color: Colors.white.withOpacity(0.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1196,12 +1179,10 @@ class ProductPricesOverlayWidget extends StatelessWidget {
       fontSize: fontSize,
       fontWeight: FontWeight.w800,
       fontFamily: 'Roboto Mono',
-      // other style properties
     );
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      // Center column items vertically
       children: [
         SvgPicture.asset(assetPath, height: iconSize),
         AutoSizeText(
