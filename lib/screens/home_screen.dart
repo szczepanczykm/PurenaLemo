@@ -15,6 +15,7 @@ import '../services/translation_service.dart';
 import '../utils/svg_utils.dart';
 import 'dialogs/language_selection_dialog.dart';
 import 'dialogs/presentation_type_dialog.dart';
+import 'dialogs/product_type_dialog.dart';
 import 'dialogs/settings_dialog.dart';
 
 class MyHomeScreen extends StatefulWidget {
@@ -226,73 +227,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     );
   }
 
-  void _showPresentationTypeDialog() async {
-    PresentationType? selectedType = _presentationType;
-
-    await showDialog<PresentationType>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: Text(TranslationService.getTranslation(
-              currentLanguage, "choose_presentation_type")),
-          children: PresentationType.values.map((type) {
-            return SimpleDialogOption(
-              onPressed: () {
-                selectedType = type;
-                Navigator.pop(context);
-              },
-              child: Text(presentationTypeNames[type] ?? 'Undefined'),
-            );
-          }).toList(),
-        );
-      },
-    );
-
-    if (selectedType != null) {
-      setState(() {
-        _presentationType = selectedType!;
-      });
-    }
-  }
-
-  void _showProductTypeDialog() async {
-    ProductType? selectedProduct = _productType;
-
-    await showDialog<ProductType>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: Text(TranslationService.getTranslation(
-              currentLanguage, "choose_product")),
-          children: ProductType.values.map((product) {
-            return SimpleDialogOption(
-              onPressed: () {
-                selectedProduct = product;
-                Navigator.pop(context);
-              },
-              child: Text(productTypeNames[product] ?? 'Undefined'),
-            );
-          }).toList(),
-        );
-      },
-    );
-
-    if (selectedProduct != null && selectedProduct != _productType) {
-      setState(() {
-        _productType = selectedProduct!;
-        _controller.dispose();
-        _controller =
-            VideoPlayerController.asset(productTypeMovies[_productType]!)
-              ..initialize().then((_) {
-                setState(() {
-                  _controller.setLooping(true);
-                  _controller.play();
-                });
-              });
-      });
-    }
-  }
-
   void _showSelectLogoDialog(BuildContext context) {
     TextEditingController logoUrlController = TextEditingController();
 
@@ -421,8 +355,38 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                                 currentLanguage, "choose_product")),
                             SizedBox(width: _space),
                             MyButton(
-                                onPressed: () => {_showProductTypeDialog()},
-                                text: productTypeNames[_productType]!),
+                              onPressed: () async {
+                                await showDialog<ProductType>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return ProductTypeDialog(
+                                      currentLanguage: currentLanguage,
+                                      initialProductType: _productType,
+                                      onProductTypeSelected:
+                                          (ProductType selectedProduct) {
+                                        if (selectedProduct != _productType) {
+                                          setState(() {
+                                            _productType = selectedProduct;
+                                            _controller.dispose();
+                                            _controller = VideoPlayerController
+                                                .asset(productTypeMovies[
+                                                    _productType]!)
+                                              ..initialize().then((_) {
+                                                setState(() {
+                                                  _controller.setLooping(true);
+                                                  _controller.play();
+                                                });
+                                              });
+                                          });
+                                        }
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              text:
+                                  productTypeNames[_productType] ?? 'Undefined',
+                            ),
                             SizedBox(width: _space),
                           ],
                         ),
