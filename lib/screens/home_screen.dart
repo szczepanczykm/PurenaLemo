@@ -14,6 +14,7 @@ import '../models/logo_state.dart';
 import '../services/translation_service.dart';
 import '../utils/svg_utils.dart';
 import 'dialogs/language_selection_dialog.dart';
+import 'dialogs/presentation_type_dialog.dart';
 import 'dialogs/settings_dialog.dart';
 
 class MyHomeScreen extends StatefulWidget {
@@ -431,10 +432,28 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                                 currentLanguage, "choose_presentation_type")),
                             SizedBox(width: _space),
                             MyButton(
-                                onPressed: () =>
-                                    {_showPresentationTypeDialog()},
-                                text:
-                                    presentationTypeNames[_presentationType]!),
+                              onPressed: () async {
+                                PresentationType? selectedType =
+                                    await showDialog<PresentationType>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return PresentationTypeDialog(
+                                      currentLanguage: currentLanguage,
+                                      initialPresentationType:
+                                          _presentationType,
+                                      onPresentationTypeSelected:
+                                          (PresentationType selectedType) {
+                                        setState(() {
+                                          _presentationType = selectedType;
+                                        });
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              text: presentationTypeNames[_presentationType] ??
+                                  'Undefined',
+                            ),
                             SizedBox(width: _space),
                           ],
                         ),
