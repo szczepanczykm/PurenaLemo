@@ -164,69 +164,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     );
   }
 
-  Widget _settingsRow(BuildContext context, int rowNumber, bool isChecked,
-      StateSetter setDialogState, Function(bool?) onCheckedChanged) {
-    TextEditingController quantityController = rowNumber == 0
-        ? _quantityController1
-        : rowNumber == 1
-            ? _quantityController2
-            : _quantityController3;
-    TextEditingController priceController = rowNumber == 0
-        ? _priceController1
-        : rowNumber == 1
-            ? _priceController2
-            : _priceController3;
-    String portionTitle = "${rowNumber + 1}.";
-
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Text(portionTitle, textAlign: TextAlign.right),
-        ),
-        Checkbox(
-          value: portionStates[rowNumber]['isChecked'],
-          onChanged: (bool? value) {
-            setDialogState(() {
-              portionStates[rowNumber]['isChecked'] = value!;
-            });
-          },
-        ),
-        Expanded(
-          flex: 3,
-          child: TextField(
-            style: const TextStyle(
-              fontFamily: 'Regular',
-            ),
-            controller: quantityController,
-            decoration: const InputDecoration(
-              helperText: "200 ml",
-              hintText: 'Ilość',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          flex: 3,
-          child: TextField(
-            style: const TextStyle(
-              fontFamily: 'Regular',
-            ),
-            controller: priceController,
-            decoration: const InputDecoration(
-              helperText: "10 PLN",
-              hintText: 'Cena',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,215 +180,12 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  getSvgPicture(Provider.of<LogoState>(context).logoUrl),
-                  MyButton(
-                    onPressed: () => {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return const SelectLogoDialog();
-                        },
-                      ),
-                    },
-                    text: "Wybierz logo...",
-                  )
-                ],
-              ),
-            ),
+            _buildLogoSection(context),
             Expanded(
               child: Row(
                 children: [
-                  SingleChildScrollView(
-                    child: Table(
-                      defaultVerticalAlignment:
-                          TableCellVerticalAlignment.middle,
-                      columnWidths: const {
-                        0: IntrinsicColumnWidth(),
-                        1: IntrinsicColumnWidth(),
-                        2: IntrinsicColumnWidth(),
-                        3: IntrinsicColumnWidth(),
-                      },
-                      children: [
-                        TableRow(
-                          children: [
-                            Text(
-                                '${TranslationService.getTranslation(currentLanguage, "choose_language")}: '),
-                            SizedBox(width: _space),
-                            MyButton(
-                                onPressed: () => showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return LanguageSelectionDialog(
-                                          currentLanguage: currentLanguage,
-                                          onLanguageSelected:
-                                              (selectedLanguage) {
-                                            setState(() {
-                                              currentLanguage =
-                                                  selectedLanguage;
-                                              updateProductNames();
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ),
-                                text: currentLanguage),
-                            SizedBox(width: _space),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Text(TranslationService.getTranslation(
-                                currentLanguage, "choose_product")),
-                            SizedBox(width: _space),
-                            MyButton(
-                              onPressed: () async {
-                                await showDialog<ProductType>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return ProductTypeDialog(
-                                      currentLanguage: currentLanguage,
-                                      initialProductType: _productType,
-                                      onProductTypeSelected:
-                                          (ProductType selectedProduct) {
-                                        if (selectedProduct != _productType) {
-                                          setState(() {
-                                            _productType = selectedProduct;
-                                            _controller.dispose();
-                                            _controller = VideoPlayerController
-                                                .asset(productTypeMovies[
-                                                    _productType]!)
-                                              ..initialize().then((_) {
-                                                setState(() {
-                                                  _controller.setLooping(true);
-                                                  _controller.play();
-                                                });
-                                              });
-                                          });
-                                        }
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              text:
-                                  productTypeNames[_productType] ?? 'Undefined',
-                            ),
-                            SizedBox(width: _space),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Text(TranslationService.getTranslation(
-                                currentLanguage, "choose_presentation_type")),
-                            SizedBox(width: _space),
-                            MyButton(
-                              onPressed: () async {
-                                PresentationType? selectedType =
-                                    await showDialog<PresentationType>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return PresentationTypeDialog(
-                                      currentLanguage: currentLanguage,
-                                      initialPresentationType:
-                                          _presentationType,
-                                      onPresentationTypeSelected:
-                                          (PresentationType selectedType) {
-                                        setState(() {
-                                          _presentationType = selectedType;
-                                        });
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              text: presentationTypeNames[_presentationType] ??
-                                  'Undefined',
-                            ),
-                            SizedBox(width: _space),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Text(TranslationService.getTranslation(
-                                currentLanguage, "set_parameters")),
-                            SizedBox(width: _space),
-                            MyButton(
-                                onPressed: () => {
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (BuildContext context) {
-                                          return SettingsDialog(
-                                            portionStates: portionStates,
-                                            quantityControllers: [
-                                              _quantityController1,
-                                              _quantityController2,
-                                              _quantityController3,
-                                            ],
-                                            priceControllers: [
-                                              _priceController1,
-                                              _priceController2,
-                                              _priceController3,
-                                            ],
-                                            onSave: (updatedPortionStates) {
-                                              setState(() {
-                                                portionStates =
-                                                    updatedPortionStates;
-                                              });
-                                            },
-                                            currentLanguage: currentLanguage,
-                                          );
-                                        },
-                                      )
-                                    },
-                                text: TranslationService.getTranslation(
-                                    currentLanguage, "set_parameters")),
-                            SizedBox(width: _space),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Text(TranslationService.getTranslation(
-                                currentLanguage, "text_color")),
-                            SizedBox(width: _space),
-                            MyButton(
-                              onPressed: () => {_showColorPickerDialog()},
-                              text: colorToRgbString(currentColor),
-                              buttonColor: currentColor,
-                            ),
-                            SizedBox(width: _space),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                      child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                            border: Border.all(color: Colors.white),
-                          ),
-                          child: VideoWidget(
-                              controller: _controller,
-                              textColor: currentColor,
-                              text: productTypeNames[_productType]!,
-                              selectedPortions: portionStates
-                                  .where((portion) => portion['isChecked'])
-                                  .toList(),
-                              presentationType: _presentationType))),
+                  _buildSettingsTable(context),
+                  _buildVideoWidgetContainer(),
                 ],
               ),
             ),
@@ -459,5 +193,211 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
         ),
       ),
     );
+  }
+
+  SingleChildScrollView _buildSettingsTable(BuildContext context) {
+    return SingleChildScrollView(
+      child: Table(
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        columnWidths: const {
+          0: IntrinsicColumnWidth(),
+          1: IntrinsicColumnWidth(),
+          2: IntrinsicColumnWidth(),
+          3: IntrinsicColumnWidth(),
+        },
+        children: [
+          TableRow(
+            children: [
+              Text(
+                  '${TranslationService.getTranslation(currentLanguage, "choose_language")}: '),
+              SizedBox(width: _space),
+              MyButton(
+                  onPressed: () => showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return LanguageSelectionDialog(
+                            currentLanguage: currentLanguage,
+                            onLanguageSelected: (selectedLanguage) {
+                              setState(() {
+                                currentLanguage = selectedLanguage;
+                                updateProductNames();
+                              });
+                            },
+                          );
+                        },
+                      ),
+                  text: currentLanguage),
+              SizedBox(width: _space),
+            ],
+          ),
+          TableRow(
+            children: [
+              Text(TranslationService.getTranslation(
+                  currentLanguage, "choose_product")),
+              SizedBox(width: _space),
+              MyButton(
+                onPressed: () async {
+                  await showDialog<ProductType>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ProductTypeDialog(
+                        currentLanguage: currentLanguage,
+                        initialProductType: _productType,
+                        onProductTypeSelected: (ProductType selectedProduct) {
+                          if (selectedProduct != _productType) {
+                            setState(() {
+                              _productType = selectedProduct;
+                              _controller.dispose();
+                              _controller = VideoPlayerController.asset(
+                                  productTypeMovies[_productType]!)
+                                ..initialize().then((_) {
+                                  setState(() {
+                                    _controller.setLooping(true);
+                                    _controller.play();
+                                  });
+                                });
+                            });
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+                text: productTypeNames[_productType] ?? 'Undefined',
+              ),
+              SizedBox(width: _space),
+            ],
+          ),
+          TableRow(
+            children: [
+              Text(TranslationService.getTranslation(
+                  currentLanguage, "choose_presentation_type")),
+              SizedBox(width: _space),
+              MyButton(
+                onPressed: () async {
+                  PresentationType? selectedType =
+                      await showDialog<PresentationType>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return PresentationTypeDialog(
+                        currentLanguage: currentLanguage,
+                        initialPresentationType: _presentationType,
+                        onPresentationTypeSelected:
+                            (PresentationType selectedType) {
+                          setState(() {
+                            _presentationType = selectedType;
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
+                text: presentationTypeNames[_presentationType] ?? 'Undefined',
+              ),
+              SizedBox(width: _space),
+            ],
+          ),
+          TableRow(
+            children: [
+              Text(TranslationService.getTranslation(
+                  currentLanguage, "set_parameters")),
+              SizedBox(width: _space),
+              MyButton(
+                  onPressed: () => {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return SettingsDialog(
+                              portionStates: portionStates,
+                              quantityControllers: [
+                                _quantityController1,
+                                _quantityController2,
+                                _quantityController3,
+                              ],
+                              priceControllers: [
+                                _priceController1,
+                                _priceController2,
+                                _priceController3,
+                              ],
+                              onSave: (updatedPortionStates) {
+                                setState(() {
+                                  portionStates = updatedPortionStates;
+                                });
+                              },
+                              currentLanguage: currentLanguage,
+                            );
+                          },
+                        )
+                      },
+                  text: TranslationService.getTranslation(
+                      currentLanguage, "set_parameters")),
+              SizedBox(width: _space),
+            ],
+          ),
+          TableRow(
+            children: [
+              Text(TranslationService.getTranslation(
+                  currentLanguage, "text_color")),
+              SizedBox(width: _space),
+              MyButton(
+                onPressed: () => {_showColorPickerDialog()},
+                text: colorToRgbString(currentColor),
+                buttonColor: currentColor,
+              ),
+              SizedBox(width: _space),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding _buildLogoSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          getSvgPicture(Provider.of<LogoState>(context).logoUrl),
+          MyButton(
+            onPressed: () => {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const SelectLogoDialog();
+                },
+              ),
+            },
+            text: "Wybierz logo...",
+          )
+        ],
+      ),
+    );
+  }
+
+  Expanded _buildVideoWidgetContainer() {
+    return Expanded(
+        child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              border: Border.all(color: Colors.white),
+            ),
+            child: VideoWidget(
+                controller: _controller,
+                textColor: currentColor,
+                text: productTypeNames[_productType]!,
+                selectedPortions: portionStates
+                    .where((portion) => portion['isChecked'])
+                    .toList(),
+                presentationType: _presentationType)));
   }
 }

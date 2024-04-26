@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:purena_lemo/services/translation_service.dart';
 
+import '../widgets/settings_row.dart';
+
 class SettingsDialog extends StatefulWidget {
   final List<Map<String, dynamic>> portionStates;
   final List<TextEditingController> quantityControllers;
@@ -42,21 +44,39 @@ class SettingsDialogState extends State<SettingsDialog> {
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            _settingsRow(context, 0, localIsChecked[0], (bool? value) {
-              setState(() {
-                localIsChecked[0] = value ?? localIsChecked[0];
-              });
-            }),
-            _settingsRow(context, 1, localIsChecked[1], (bool? value) {
-              setState(() {
-                localIsChecked[1] = value ?? localIsChecked[1];
-              });
-            }),
-            _settingsRow(context, 2, localIsChecked[2], (bool? value) {
-              setState(() {
-                localIsChecked[2] = value ?? localIsChecked[2];
-              });
-            }),
+            SettingsRow(
+              rowNumber: 0,
+              isChecked: localIsChecked[0],
+              onCheckedChanged: (bool? value) {
+                setState(() {
+                  localIsChecked[0] = value ?? localIsChecked[0];
+                });
+              },
+              quantityController: widget.quantityControllers[0],
+              priceController: widget.priceControllers[0],
+            ),
+            SettingsRow(
+              rowNumber: 1,
+              isChecked: localIsChecked[1],
+              onCheckedChanged: (bool? value) {
+                setState(() {
+                  localIsChecked[1] = value ?? localIsChecked[1];
+                });
+              },
+              quantityController: widget.quantityControllers[1],
+              priceController: widget.priceControllers[1],
+            ),
+            SettingsRow(
+              rowNumber: 2,
+              isChecked: localIsChecked[2],
+              onCheckedChanged: (bool? value) {
+                setState(() {
+                  localIsChecked[2] = value ?? localIsChecked[2];
+                });
+              },
+              quantityController: widget.quantityControllers[2],
+              priceController: widget.priceControllers[2],
+            ),
           ],
         ),
       ),
