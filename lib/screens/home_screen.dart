@@ -13,6 +13,7 @@ import '../constants/maps.dart';
 import '../models/logo_state.dart';
 import '../services/translation_service.dart';
 import '../utils/svg_utils.dart';
+import 'dialogs/language_selection_dialog.dart';
 import 'dialogs/settings_dialog.dart';
 
 class MyHomeScreen extends StatefulWidget {
@@ -291,70 +292,6 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     }
   }
 
-  void _showLanguageSelectionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: Text(TranslationService.getTranslation(
-              currentLanguage, "choose_language")),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Polski');
-                setState(() {
-                  currentLanguage = 'Polski';
-                  updateProductNames();
-                });
-              },
-              child: const Text('Polski'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'English');
-                setState(() {
-                  currentLanguage = 'English';
-                  updateProductNames();
-                });
-              },
-              child: const Text('English'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Italiano');
-                setState(() {
-                  currentLanguage = 'Italiano';
-                  updateProductNames();
-                });
-              },
-              child: const Text('Italiano'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Czech');
-                setState(() {
-                  currentLanguage = 'Czech';
-                  updateProductNames();
-                });
-              },
-              child: const Text('Czech'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, 'Dutch');
-                setState(() {
-                  currentLanguage = 'Dutch';
-                  updateProductNames();
-                });
-              },
-              child: const Text('Dutch'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _showSelectLogoDialog(BuildContext context) {
     TextEditingController logoUrlController = TextEditingController();
 
@@ -457,8 +394,22 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
                                 '${TranslationService.getTranslation(currentLanguage, "choose_language")}: '),
                             SizedBox(width: _space),
                             MyButton(
-                                onPressed: () =>
-                                    _showLanguageSelectionDialog(context),
+                                onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return LanguageSelectionDialog(
+                                          currentLanguage: currentLanguage,
+                                          onLanguageSelected:
+                                              (selectedLanguage) {
+                                            setState(() {
+                                              currentLanguage =
+                                                  selectedLanguage;
+                                              updateProductNames();
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
                                 text: currentLanguage),
                             SizedBox(width: _space),
                           ],
