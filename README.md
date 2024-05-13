@@ -12,8 +12,6 @@ and adjust their product offerings dynamically in a visually appealing format.
 
 - **Product Customization**: Users can easily set and update the prices and types of juice products.
 - **Presentation Styles**: Choose different presentation styles to best suit the event and audience.
-- **Dynamic Updates**: Make real-time changes during events to adapt to audience feedback or
-  promotional strategies.
 
 ## Screenshots
 
