@@ -41,3 +41,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Fastlane
+fastlane/purenaservice-a08770e958d1.json
+fastlane/report.xml
+fastlane/README.md
