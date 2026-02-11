@@ -1,0 +1,45 @@
+default_platform(:android)
+
+PROJECT_ROOT = File.expand_path("../..", __FILE__)
+AAB_PATH = File.join(PROJECT_ROOT, "build", "app", "outputs", "bundle", "release", "app-release.aab")
+
+platform :android do
+
+  desc "Zbuduj debug APK"
+  lane :build_debug do
+    sh("flutter build apk --debug")
+  end
+
+  desc "Zbuduj release APK"
+  lane :release_apk do
+    sh("flutter clean")
+    sh("flutter build apk --release")
+  end
+
+  desc "Zbuduj release AAB (Google Play)"
+  lane :release do
+    sh("flutter clean")
+    sh("flutter build appbundle --release")
+  end
+
+  desc "Deploy do Google Play (internal track)"
+  lane :deploy do
+    sh("flutter clean")
+    sh("flutter build appbundle --release")
+    upload_to_play_store(
+      track: "internal",
+      aab: AAB_PATH
+    )
+  end
+
+  desc "Deploy do Google Play (production)"
+  lane :deploy_production do
+    sh("flutter clean")
+    sh("flutter build appbundle --release")
+    upload_to_play_store(
+      track: "production",
+      aab: AAB_PATH
+    )
+  end
+
+end
