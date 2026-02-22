@@ -42,8 +42,11 @@ class ProductPricesOverlayWidget extends StatelessWidget {
                 flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
-                  child: getSvgPicture(
-                      Provider.of<LogoState>(context).logoUrl),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: getSvgPicture(
+                        Provider.of<LogoState>(context).logoUrl),
+                  ),
                 ),
               ),
               Flexible(
@@ -137,7 +140,12 @@ class ProductPricesOverlayWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Flexible(child: SvgPicture.asset(assetPath, height: iconSize)),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: SvgPicture.asset(assetPath, height: iconSize),
+          ),
+        ),
         AutoSizeText(
           sizeText,
           style: adjustedTextStyle,
