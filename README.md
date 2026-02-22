@@ -12,8 +12,6 @@ and adjust their product offerings dynamically in a visually appealing format.
 
 - **Product Customization**: Users can easily set and update the prices and types of juice products.
 - **Presentation Styles**: Choose different presentation styles to best suit the event and audience.
-- **Dynamic Updates**: Make real-time changes during events to adapt to audience feedback or
-  promotional strategies.
 
 ## Screenshots
 
@@ -39,6 +37,4 @@ To use the app effectively:
 2. **Set Prices**: Click on parameters button to adjust prices and sizes.
 3. **Change Presentation**: Select the presentation type to toggle between different visual styles.
 
-## Support
-
-For any technical support or queries, please contact szczepanos@gmail.com.
+https://play.google.com/store/apps/details?id=pl.belfood.purena_lemo
