@@ -37,13 +37,22 @@ class ProductPricesOverlayWidget extends StatelessWidget {
         return Container(
           color: Colors.white,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              getSvgPicture(Provider.of<LogoState>(context).logoUrl),
-              Expanded(
+              Flexible(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: getSvgPicture(
+                      Provider.of<LogoState>(context).logoUrl),
+                ),
+              ),
+              Flexible(
+                flex: 5,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: productSizeColumns,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: productSizeColumns
+                      .map((w) => Flexible(child: w))
+                      .toList(),
                 ),
               ),
             ],
@@ -126,17 +135,20 @@ class ProductPricesOverlayWidget extends StatelessWidget {
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(assetPath, height: iconSize),
+        Flexible(child: SvgPicture.asset(assetPath, height: iconSize)),
         AutoSizeText(
           sizeText,
           style: adjustedTextStyle,
           maxLines: 1,
+          minFontSize: 6,
         ),
         AutoSizeText(
           priceText,
           style: adjustedTextStyle,
           maxLines: 1,
+          minFontSize: 6,
         ),
       ],
     );

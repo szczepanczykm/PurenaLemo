@@ -134,6 +134,9 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+
     return Scaffold(
       backgroundColor: Colors.green,
       floatingActionButton: FloatingActionButton(
@@ -146,26 +149,49 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            _buildLogoSection(context),
-            Expanded(
-              child: Row(
-                children: [
-                  _buildSettingsTable(context),
-                  _buildVideoWidgetContainer(),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: isPortrait
+            ? _buildPortraitBody(context)
+            : _buildLandscapeBody(context),
       ),
     );
   }
 
-  SingleChildScrollView _buildSettingsTable(BuildContext context) {
+  Widget _buildLandscapeBody(BuildContext context) {
+    return Column(
+      children: [
+        _buildLogoSection(context),
+        Expanded(
+          child: Row(
+            children: [
+              SingleChildScrollView(
+                  child: _buildSettingsContent(context)),
+              Expanded(child: _buildVideoContent()),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPortraitBody(BuildContext context) {
     return SingleChildScrollView(
-      child: Table(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildLogoSection(context),
+          _buildSettingsContent(context),
+          const SizedBox(height: 16),
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: _buildVideoContent(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsContent(BuildContext context) {
+    return Table(
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         columnWidths: const {
           0: IntrinsicColumnWidth(),
@@ -330,8 +356,7 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
             ],
           ),
         ],
-      ),
-    );
+      );
   }
 
   Padding _buildLogoSection(BuildContext context) {
@@ -357,21 +382,22 @@ class _MyHomeScreenState extends State<MyHomeScreen> {
     );
   }
 
-  Expanded _buildVideoWidgetContainer() {
-    return Expanded(
-        child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-              border: Border.all(color: Colors.white),
+  Widget _buildVideoContent() {
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
             ),
+          ],
+          border: Border.all(color: Colors.white),
+        ),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
             child: VideoWidget(
                 controller: _controller,
                 textColor: currentColor,
